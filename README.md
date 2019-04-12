@@ -8,7 +8,7 @@ algorithms developed in the package can be referred to \url{https://arxiv.org/ab
 You can install the released version of RpESCA from [github](https://github.com) with:
 
 ``` r
-# a small part of the algorithms are in C++
+# a small part of the algorithms is in C++
 # make sure you have installed Rcpp package
 
 devtools::install_github("YipengUva/RpESCA")
@@ -17,4 +17,6 @@ devtools::install_github("YipengUva/RpESCA")
 ## to do list
 1. write the core algorithm in C++ using Rcpp to further increase the speed
 
-2. put it on CRAN
+2. add more figures to the vignettes
+
+3. put the package on CRAN
