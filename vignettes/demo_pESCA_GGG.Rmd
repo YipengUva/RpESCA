@@ -1,0 +1,202 @@
+---
+title: "Demo of the pESCA model on Gaussian-Gaussian-Gaussian data sets"
+author: "Yipeng Song"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This doc is going to show how to simulate Gaussian-Gaussian-Gaussian (G-G-G) data sets with underlying global, local common and distinct structures according to the ESCA model. After that, these data sets are used to illustrate how to construct a pESCA model and the corresponding model selection process. In this doc, we will use the simulated parameters to
+evluate the model selection process. The documents of the used functions can be found by using the command '? function name'. Since I did't find an easy way to generate the figures in the same way as Matlab, figures will not included in this version.
+
+## Load required packages
+```{r load required packages, eval=FALSE}
+library(RSpectra)
+library(RpESCA2)
+
+```
+ 
+## How to simulate proper G-G-G data sets
+G-G-G data sets are simulated according to the ESCA model. The number of
+samples is set to 200; the number of the variables in the three data sets 
+are 1000, 500 and 100; the SNRs in simulating the global, local common and
+distinct structures are set to 1; the noise levels (the square root of the 
+dispersion parameter $\alpha$) are set to 1; the sparse ratio, which is 
+the proportion of 0s in the simulated loading matrix, is set to 0. 
+
+```{r characteristics of simulated data sets, eval=FALSE}
+set.seed(123)
+
+# simulate proper data sets
+n <- 200
+ds <- c(1000, 500, 100)
+simulatedData <- dataSimu_group_sparse(n=n,ds=ds,
+                                  dataTypes= 'GGG',
+                                  noises=rep(1,3),
+                                  margProb=0.1,sparse_ratio=0,
+                                  SNRgc=1,SNRlc=rep(1,3),SNRd=rep(1,3))
+
+# variation explained ratios for each data set or the full data set
+simulatedData$varExpTotals_simu
+
+# variation explained ratios of each PC for each data set or the full data set
+simulatedData$varExpPCs_simu
+
+```
+
+
+## How to estimate the dispersion parameter $\alpha$ for each data set
+The dispersion parameters are estimated using the PCA model.
+Details can be found in the supplementary information of the paper.
+
+```{r estimate the dispersion parameter, eval=FALSE}
+dataSets <- simulatedData$X
+dataTypes <- simulatedData$dataTypes
+
+# used parameters
+opts <- list()
+opts$tol_obj <- 1E-4
+opts$quiet <- 1
+
+# save the estimated alphas, selected number of PCs and cvErrors
+alphas <- rep(NA,3)
+R_selected_list <- as.list(1:3)
+cvErrors_list <- as.list(1:3)
+
+# alpha estimation for each data set
+for (i in 1:length(dataSets)){
+  # index ith data set
+  X <- dataSets[[i]]
+  
+  # alpha estimation procedure
+  alpha_est <- alpha_estimation(X,K=3,Rs = 5:20,opts=opts)
+  alphas[i] <- alpha_est$alphas_mean
+  R_selected_list[[i]] <- alpha_est$R_CV
+  cvErrors_list[[i]] <- alpha_est$cvErrors
+}
+names(alphas) <- paste0('alpha', 1:3)
+
+# estimated alphas
+alphas
+
+# selected number of PCs for the 1-th data set
+R_selected_list[[1]]
+
+# cvErrors for the model selection of the 1-th data set
+cvErrors_list[[1]]
+
+```
+
+## How to set the parameters for the pESCA model
+The following parameters are used for the pESCA model selection. 
+The meaning of these parameters can be found in the document of the function.
+
+```{r set up the pESCA model, eval=FALSE}
+# concave function and its hyper-parameter
+fun_concave <- 'gdp'; gamma <- 1;
+penalty = 'L2' # concave L2 norm penalty
+
+# parameters of a pESCA with concave L2norm penalty model
+opts <- list()
+opts$gamma <- gamma  # hyper-parameter for the used penalty
+opts$rand_start <- 0
+opts$tol_obj <- 1e-6 # stopping criteria
+opts$maxit   <- 500
+opts$alphas  <- alphas
+opts$R    <- 50    # components used
+opts$thr_path <- 0 # generaint thresholding path or not
+opts$quiet <- 1
+
+# set up the pESCA model
+dataSets <- simulatedData$X
+dataTypes <-'GGG'     # or rep('G',3)
+
+```
+
+## The model selection process of the pESCA model
+At first, we need to find a proper searching range of $\lambda$ for the 
+model selection. After that, 15 values of $\lambda$ are selected from this
+searching range equally in log-space. Then, the developed CV error based
+model selection procedure is used to find a proper model. 
+
+```{r model selection, eval=FALSE}
+# model selection pESCA conave L2 norm penalty
+nTries <- 15
+lambdas_CV <- log10_seq(from=1, to=500, length.out=nTries)
+
+result_CV <- pESCA_CV(dataSets, dataTypes,
+                      lambdas_CV, 
+                      penalty=penalty, 
+                      fun_concave=fun_concave, 
+                      opts=opts)
+
+# select the model with minimum CV error
+index_min_cv <- which.min(result_CV$cvErrors_mat[,1])
+
+# cvErrors during the model selection process
+result_CV$cvErrors_mat
+
+# selected value of lambda
+lambdas_CV[index_min_cv]
+
+```
+
+## How to fit the final model
+After selecting the model with the minimum CV error, the selected model is
+re-fitted on the full data set with the selected value of $\lambda$ and
+the outputs of the selected model as the initialization. The RV
+coefficients in estimating the global common (C123), local common (C12,
+C13, C23) and distinct structures (D1, D2, D3) are shown as RVs_structures. 
+And the corresponding rank estimations of these structures are shown as 
+Ranks_structures. The RMSEs in estimating the simulated
+$\mathbf{\Theta}$, $\mathbf{\Theta}_1$, $\mathbf{\Theta}_2$ and
+$\mathbf{\Theta}_3$ and $\mu$ are shown as RMSEs_parameters. 
+
+```{r fit the final model, eval=FALSE}
+# fit the final model
+lambdas_opt <- rep(lambdas_CV[index_min_cv],length(dataSets))
+opts_opt <- result_CV$inits[[index_min_cv]]
+opts_opt$tol_obj <- 1E-8 # using high precision model
+
+pESCA_L2 <- pESCA(dataSets = dataSets,
+                          dataTypes = dataTypes,
+                          lambdas = lambdas_opt,
+                          penalty = penalty,
+                          fun_concave= fun_concave,
+                          opts = opts_opt)
+
+# evaluate the final model
+mu <- pESCA_L2$mu
+A <- pESCA_L2$A
+B <- pESCA_L2$B
+S <- pESCA_L2$S
+pESCA_L2_eval <- eval_metrics_simu_group(mu,A,B,S,ds,simulatedData)
+
+# RV coefficients in estimating the simulated structures
+pESCA_L2_eval$RVs_structs
+
+# Rank estimations of the simulated structures
+pESCA_L2_eval$Ranks_structs
+
+# RMSEs in estimating the simulated parameters
+pESCA_L2_eval$RMSEs_params
+
+# estimated variation explained ratios for each data set or the full data set
+pESCA_L2$varExpTotals
+
+# estimated variation explained ratios of each PC for each data set or the full data set
+pESCA_L2$varExpPCs
+
+```
+
+
