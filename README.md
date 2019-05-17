@@ -8,10 +8,12 @@ Since the package is not avaliable to the public now, the gitlab installation
 may not work. You can also install the package in this way.
 ```{r}
 # 1. download the RpESCA package from Gitlab. 
+
 # 2. install the following packages by
 install.packages(c("testthat","stringr","RSpectra","devtools"))
 
 # 3. test if the R package can be builded using Rstudio check
+
 # 4. load the package in as follows
 devtools::load_all()
 
