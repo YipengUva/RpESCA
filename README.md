@@ -19,3 +19,4 @@ devtools::install_github("YipengUva/RpESCA")
 3. put the package on CRAN
 
 [![Build Status](https://travis-ci.com/YipengUva/RpESCA.svg?branch=master)](https://travis-ci.com/YipengUva/RpESCA)
+
