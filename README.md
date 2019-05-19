@@ -11,7 +11,7 @@ You can install the released version of RpESCA from [github](https://github.com)
 # a small part of the algorithms is in C++
 # make sure you have installed Rcpp package
 
-devtools::install_gitlab("uvabda/RpESCA")
+devtools::install_github("YipengUva/RpESCA")
 ```
 
 ## to do list
