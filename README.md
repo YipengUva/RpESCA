@@ -8,7 +8,7 @@ algorithms developed in the package can be referred to \url{https://arxiv.org/ab
 You can install the released version of RpESCA from [github](https://github.com) with:
 
 ``` r
-devtools::install_gitlab("YipengUva/RpESCA")
+devtools::install_gitlab("uvabda/RpESCA")
 ```
 
 ## to do list
