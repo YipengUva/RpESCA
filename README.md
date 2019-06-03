@@ -1,4 +1,7 @@
-# package RpESCA
+## Change to read only
+A new package "RpESCA2" will be released soon to replace this version. And this version will be read-only. In RpESCA2, all the core algorithms will be written in C++ and Rcpp.
+
+## package RpESCA
 
 This package is the R implementation of pESCA models with various concave penalties. The details of the 
 algorithms developed in the package can be referred to \url{https://arxiv.org/abs/1902.06241}.
