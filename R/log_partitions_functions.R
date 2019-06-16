@@ -11,9 +11,9 @@
 #'
 #' @examples
 #' \dontrun{log_part_B(matrix(0:9,2,5))}
-log_part_B <- function(Theta){
-
-  log(1+exp(Theta))
+log_part_B <- function(Theta) {
+    
+    log(1 + exp(Theta))
 }
 
 #' The first order gradient of log-partation function of Bernoulli distribution
@@ -29,9 +29,9 @@ log_part_B <- function(Theta){
 #'
 #' @examples
 #' \dontrun{log_part_B_g(matrix(0:9,2,5))}
-log_part_B_g <- function(Theta){
-
-  exp(Theta)/(1+exp(Theta))
+log_part_B_g <- function(Theta) {
+    
+    exp(Theta)/(1 + exp(Theta))
 }
 
 #' The log-partation function of Gaussian distribution
@@ -47,9 +47,9 @@ log_part_B_g <- function(Theta){
 #'
 #' @examples
 #' \dontrun{log_part_G(matrix(0:9,2,5))}
-log_part_G <- function(Theta){
-
-  0.5*(Theta^2)
+log_part_G <- function(Theta) {
+    
+    0.5 * (Theta^2)
 }
 
 #' The first order gradient of log-partation function of Gaussian distribution
@@ -65,9 +65,9 @@ log_part_G <- function(Theta){
 #'
 #' @examples
 #' \dontrun{log_part_G_g(matrix(0:9,2,5))}
-log_part_G_g <- function(Theta){
-
-  Theta
+log_part_G_g <- function(Theta) {
+    
+    Theta
 }
 
 #' The log-partation function of Possion distribution
@@ -83,9 +83,9 @@ log_part_G_g <- function(Theta){
 #'
 #' @examples
 #' \dontrun{log_part_P(matrix(0:9,2,5))}
-log_part_P <- function(Theta){
-
-  exp(Theta)
+log_part_P <- function(Theta) {
+    
+    exp(Theta)
 }
 
 #' The first order gradient of log-partation function of Possion distribution
@@ -101,7 +101,7 @@ log_part_P <- function(Theta){
 #'
 #' @examples
 #' \dontrun{log_part_P_g(matrix(0:9,2,5))}
-log_part_P_g <- function(Theta){
-
-  exp(Theta)
+log_part_P_g <- function(Theta) {
+    
+    exp(Theta)
 }
