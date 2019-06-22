@@ -28,6 +28,7 @@ This function returns a list contains \itemize{
 }
 \description{
 This function implemented a missing value based CV model selection approach.
+First, ratio_mis percent elements are randomly selected as missing values. After
 that a EM-SVD model is constructed to estimate the prediction error.
 The details of this function can be found in \url{https://arxiv.org/abs/1902.06241}.
 }

@@ -2,7 +2,7 @@
 #'
 #' This function define the log-partation function
 #' of Bernoulli distribution. The formula is
-#' \code{log_part_B(Theta) = log(1+exp(Theta))}.
+#' \code{log_part_B(Theta) = log(1 + exp(Theta))}.
 #' Details can be found in \url{https://arxiv.org/abs/1902.06241}.
 #'
 #' @param Theta a matrix of natural parameter

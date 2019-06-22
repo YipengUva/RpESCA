@@ -2,7 +2,7 @@ Package: RpESCA
 Type: Package
 Title: R implementaion of pESCA models with various concave penalties
 Version: 1.0
-Date: 2019-04-12
+Date: 2019-06-22
 Authors@R: person("Yipeng", "Song", email = "yipeng.song@hotmail.com", role = c("aut", "cre"))
 Maintainer: The package maintainer <yipeng.song@hotmail.com>
 Description: This package is about the penalized exponential family simultaneous 

@@ -7,9 +7,9 @@
 #'
 #' @param X a quantitative data set
 #' @param K K-fold cross validation
-#' @param Rs the searching range of the number of components
+#' @param Rs the searching range for the number of components
 #' @param opts a list contains the setting for the algorithm. \itemize{
-#' \item tol_obj: tolerance for relative change of hist_obj, default:1E-6;
+#' \item tol_obj: tolerance for relative change of hist_obj, default: 1E-6;
 #' \item maxit: max number of iterations, default: 1000;
 #' }
 #'
@@ -28,7 +28,8 @@
 #'
 #' @export
 alpha_estimation <- function(X, K = 3, Rs = 1:15, opts = list()) {
-    # check if the whole row or whole column is missing, index out the rows and columns not fully missing
+    # check if the whole row or whole column is missing
+    # index out the rows and columns not fully missing
     W <- 1 - is.na(X)
     X <- X[rowSums(W) > 0, colSums(W) > 0]
     

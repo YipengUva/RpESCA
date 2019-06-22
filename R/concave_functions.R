@@ -1,7 +1,7 @@
 #' gdp penalty function
 #'
 #' This function define the gdp penalty. The
-#' formula is \code{gdp(x) =lambda*log(1+x/gamma)}.
+#' formula is \code{gdp(x) = lambda * log( 1 + x/gamma)}.
 #' Details can be found in \url{https://arxiv.org/abs/1807.04982}.
 #'
 #' @param x a non-negative numeric value
@@ -11,7 +11,7 @@
 #' @return the value of gdp penalty
 #'
 #' @examples
-#' \dontrun{gdp(0:9,gamma=1,lambda=5)}
+#' \dontrun{gdp(0:9, gamma = 1, lambda = 5)}
 gdp <- function(x, gamma, lambda) {
     # gdp penalty for non-negative values x>=0
     
@@ -25,7 +25,7 @@ gdp <- function(x, gamma, lambda) {
 #' Super gradient of gdp penalty function
 #'
 #' This function define the super gradient of the gdp penalty.
-#' The formula is \code{gdp_sg(x) = lambda/(gamma+x)}.
+#' The formula is \code{gdp_sg(x) = lambda/(gamma + x)}.
 #' Details can be found in \url{https://arxiv.org/abs/1807.04982}
 #'
 #' @inheritParams gdp

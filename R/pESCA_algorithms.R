@@ -71,28 +71,41 @@
 #' @export
 pESCA <- function(dataSets, dataTypes,
                           lambdas, penalty='L2', fun_concave='gdp', opts=list()){
-  # check if the inputs statisfy the requirements
-  stopifnot(class(dataSets) == "list")
-  stopifnot(class(penalty) == "character")
-  stopifnot(class(fun_concave) == "character")
-  stopifnot(length(dataSets) == length(lambdas))
-  if(length(dataTypes)==1){dataTypes <- unlist(strsplit(dataTypes, split=""))}
-  if(length(dataTypes) != length(dataSets)){
-    stop("The number of specified dataTypes are not equal to the number of data sets")}
+  # check if data sets are in a list
+  stopifnot(class(dataSets) == "list") 
+  
+  # check if the used penalties are included in the algorithm
+  possible_penalties <- c("L2", "L1", "composite", "element")
+  if ( !(penalty %in% possible_penalties) )
+    stop("The used penalty is not included in the algorithm")
+  
+  # check if the used concave function are included in the algorithm
+  possible_funs <- c("gdp", "lq", "scad")
+  if ( !(fun_concave %in% possible_funs) )
+    stop("The used concave function is not included in the algorithm")
+  
+  # check if the numer of data sets are equal to the number of lambdas
+  if ( !(length(dataSets) == length(lambdas) ) )
+    stop("the number of data sets are not equal to the number of lambdas")
+  
+  # check if the used data Types are included in the algorithm
+  if(length(dataTypes) == 1) dataTypes <- unlist(strsplit(dataTypes, split=""))
+  if(length(dataTypes) != length(dataSets) )
+    stop("The number of specified dataTypes are not equal to the number of data sets")
 
   # default parameters
-  if(exists('tol_obj', where=opts)){tol_obj<-opts$tol_obj} else{tol_obj<-1E-6};
-  if(exists('maxit', where=opts)){maxit<-opts$maxit} else{maxit<-1000};
-  if(exists('gamma', where=opts)){gamma<-opts$gamma} else{gamma<-1};
-  if(exists('rand_start', where=opts)){rand_start<-opts$rand_start
+  if(exists('tol_obj', where = opts)){tol_obj <- opts$tol_obj} else{tol_obj <- 1E-6};
+  if(exists('maxit', where = opts)){maxit <- opts$maxit} else{maxit <- 1000};
+  if(exists('gamma', where = opts)){gamma <- opts$gamma} else{gamma <- 1};
+  if(exists('rand_start', where = opts)){rand_start <- opts$rand_start
   }else{rand_start <- 0};
-  if(exists('thr_path', where=opts)){thr_path <- opts$thr_path} else{thr_path<-0};
-  if(exists('quiet', where=opts)){quiet <- opts$quiet} else{quiet<-0};
+  if(exists('thr_path', where = opts)){thr_path <- opts$thr_path} else{thr_path <- 0};
+  if(exists('quiet', where = opts)){quiet <- opts$quiet} else{quiet <- 0};
 
   # number of data sets, size of each data set
   nDataSets <- length(dataSets) # number of data sets
-  n <- rep(0,nDataSets)  # number of samples
-  d <- rep(0,nDataSets)  # numbers of variables in different data sets
+  n <- rep(0, nDataSets)  # number of samples
+  d <- rep(0, nDataSets)  # numbers of variables in different data sets
   for(i in 1:nDataSets){
     n[i] <- dim(dataSets[[i]])[1]
     d[i] <- dim(dataSets[[i]])[2]
@@ -107,10 +120,10 @@ pESCA <- function(dataSets, dataTypes,
   # test dataTypes
   X <- matrix(data=NA, nrow=n, ncol=sumd)
   W <- matrix(data=NA, nrow=n, ncol=sumd)
-  test_dataTypes <- rep('G',nDataSets)
+  test_dataTypes <- rep('G', nDataSets)
 
   for(i in 1:nDataSets){
-    columns_Xi <- index_Xi(i,d)
+    columns_Xi <- index_Xi(i, d)
     X_i <- as.matrix(dataSets[[i]])
     W_i <- matrix(data=1, nrow=n, ncol=d[i])
     W_i[is.na(X_i)] <- 0
@@ -120,7 +133,7 @@ pESCA <- function(dataSets, dataTypes,
     W[,columns_Xi] <- W_i
 
     unique_values <- unique(as.vector(X_i))
-    if((length(unique_values)==2) & all(unique_values %in% c(1,0))){
+    if((length(unique_values) == 2) & all(unique_values %in% c(1,0))){
       test_dataTypes[i] <- 'B'}
   }
   if(!all(dataTypes == test_dataTypes))
@@ -181,12 +194,12 @@ pESCA <- function(dataSets, dataTypes,
 
     # loss function for fitting ith data set
     # specify log-partiton function for ith data set
-    log_partition <- get(paste0("log_part_",dataType))
+    log_partition <- get(paste0("log_part_", dataType))
     f_obj0 <- {f_obj0 + (1/alpha_i)*
-        (trace_fast(W_i, log_partition(Theta0_i)) - trace_fast(Theta0_i,X_i))}
+        (trace_fast(W_i, log_partition(Theta0_i)) - trace_fast(Theta0_i, X_i))}
 
     # penalty for the ith loading matrix B_l
-    B0_i <- B0[columns_Xi,]
+    B0_i <- B0[columns_Xi, ]
     g_penalty <- penalty_fun(B0_i, fun_concave, gamma, R)
     g_obj0 <- g_obj0 + lambda_i*g_penalty$out
     Sigmas0[i,] <- g_penalty$sigmas
@@ -208,7 +221,7 @@ pESCA <- function(dataSets, dataTypes,
 
   # iterations
   for (k in 1:maxit){
-    if(quiet==0) print(paste(k,'th iteration'))
+    if(quiet == 0) print(paste(k, 'th iteration'))
 
     # majorizaiton step for p_ESCA model
     #--- form Hk ---
@@ -240,14 +253,14 @@ pESCA <- function(dataSets, dataTypes,
 	     rhos[i] <- rho_i
 
       # form Hk_i
-      Hk_i <- Theta0_i - (1/rho_i)*(W_i * (log_partition_g(Theta0_i)-X_i))
+      Hk_i <- Theta0_i - (1/rho_i) * (W_i * (log_partition_g(Theta0_i) - X_i))
 
       # update mu_i
       mu_i <- colMeans(Hk_i)
-      mu[1,columns_Xi] <- mu_i
+      mu[1, columns_Xi] <- mu_i
 
       # form JHk_i
-      JHk[,columns_Xi] <- scale(Hk_i, center=TRUE, scale=FALSE)
+      JHk[, columns_Xi] <- scale(Hk_i, center=TRUE, scale=FALSE)
 
       # form scaling factors for scaled_JHk_i, scaled_Bk_i
       alpha_i <- alphas[i]
