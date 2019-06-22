@@ -6,10 +6,10 @@ This R package implements the pESCA (penalized exponential familay simultaneous 
 
 ## Installation
 
-You can install the released version of RpESCA from [github](https://github.com) with:
+You can install the released version of RpESCA:
 
 ``` r
-devtools::install_github("YipengUva/RpESCA")
+devtools::install_gitlab("uvabda/RpESCA")
 ```
 
 ## to do list
@@ -18,6 +18,4 @@ devtools::install_github("YipengUva/RpESCA")
 2. add more figures to the vignettes
 
 3. put the package on CRAN
-
-[![Build Status](https://travis-ci.com/YipengUva/RpESCA.svg?branch=master)](https://travis-ci.com/YipengUva/RpESCA)
 
