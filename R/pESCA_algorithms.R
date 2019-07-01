@@ -390,7 +390,7 @@ pESCA <- function(dataSets, dataTypes,
     }
     varExpTotals[nDataSets+1] <- varExp_tmp$varExp_total
     varExpPCs[nDataSets+1,] <- varExp_tmp$varExp_PCs
-    dataSets_names <- paste0(rep("X_"), c(as.character(1:3), "full"))
+    dataSets_names <- paste0(rep("X_"), c(as.character(1:nDataSets), "full"))
     PCs_names <- paste0("PC", c(as.character(1:R)))
     names(varExpTotals) <- dataSets_names
     rownames(varExpPCs) <- dataSets_names
