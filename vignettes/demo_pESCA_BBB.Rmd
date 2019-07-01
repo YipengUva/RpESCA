@@ -22,7 +22,7 @@ evluate the model selection process. The documents of the used functions can be 
 ## Load required packages
 ```{r load required packages, eval=FALSE}
 library(RSpectra)
-library(RpESCA2)
+library(RpESCA)
 
 ```
  

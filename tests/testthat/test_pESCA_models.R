@@ -18,7 +18,7 @@ opts$maxit <- 3
 opts$alphas <- alphas
 opts$R <- 30  # components used
 opts$thr_path <- 0  # generaint thresholding path or not
-opts$quiet <- 0
+opts$quiet <- 1
 
 # set up the pESCA model
 dataSets <- simulatedData$X
